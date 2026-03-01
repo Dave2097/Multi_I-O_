@@ -17,6 +17,8 @@ static WebServerManager webMgr;
 
 static uint32_t setupPressStart = 0;
 static bool setupTriggered = false;
+static bool bootOk = false;
+static bool bootErrorPrinted = false;
 
 static String json_string(JsonVariantConst v, const char *fallback = "") {
   if (v.is<const char *>()) {
@@ -62,13 +64,37 @@ void setup() {
 
   bool hasNet = read_json("/net.json", gNetConfig);
 
-  ioMgr.begin(gConfig);
-  analogMgr.begin(gConfig);
-  netMgr.begin(gConfig, hasNet ? &gNetConfig : nullptr);
-  webMgr.begin(&ioMgr, &analogMgr, &netMgr, &gConfig);
+  if (!ioMgr.begin(gConfig)) {
+    Serial.println("IO init failed");
+    return;
+  }
+  if (!analogMgr.begin(gConfig)) {
+    Serial.println("Analog init failed");
+    return;
+  }
+  if (!netMgr.begin(gConfig, hasNet ? &gNetConfig : nullptr)) {
+    Serial.println("Network init failed");
+    return;
+  }
+  if (!webMgr.begin(&ioMgr, &analogMgr, &netMgr, &gConfig)) {
+    Serial.println("Web init failed");
+    return;
+  }
+
+  bootOk = true;
+  Serial.println("MF-IO boot complete");
 }
 
 void loop() {
+  if (!bootOk) {
+    if (!bootErrorPrinted) {
+      Serial.println("Boot failed - idle mode. Check /config.json and uploadfs.");
+      bootErrorPrinted = true;
+    }
+    delay(1000);
+    return;
+  }
+
   ioMgr.loop();
   netMgr.loop();
   webMgr.loop();

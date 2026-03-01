@@ -105,3 +105,13 @@ curl -X POST http://<device-ip>/api/config/network \
 ESP8266 hat Boot-Strapping Pins (`GPIO0`, `GPIO2`, `GPIO15`).
 Die Beispielbelegung in `data/config.json` (u.a. Setup-Taste auf GPIO0, PWM auf GPIO2) ist nur ein Muster.
 Passe Pinmapping für deine Hardware so an, dass der Boot nicht gestört wird.
+
+## Troubleshooting (serieller Monitor)
+
+Wenn der Monitor wiederholt `Invalid /config.json` zeigt und der ESP scheinbar neu startet:
+
+1. Sicherstellen, dass LittleFS-Dateien wirklich geflasht wurden: `pio run -t uploadfs`
+2. `data/config.json` auf gültiges JSON prüfen
+3. Danach neu starten und den Monitor beobachten
+
+Die Firmware geht bei Boot-Fehler jetzt in einen sicheren Idle-Modus und gibt eine klare Meldung aus, statt die Subsysteme uninitialisiert weiterlaufen zu lassen.
