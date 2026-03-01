@@ -1,0 +1,32 @@
+{
+  "device": {
+    "name": "MF-IO",
+    "fw_profile": "default"
+  },
+  "io": {
+    "debounce_ms": 30,
+    "relays": [
+      { "gpio": 5, "active_low": true, "default": 0 },
+      { "gpio": 4, "active_low": true, "default": 0 }
+    ],
+    "inputs": [
+      { "gpio": 14, "pullup": true, "debounce_ms": 30, "count_edges": true },
+      { "gpio": 12, "pullup": true, "debounce_ms": 30, "count_edges": true },
+      { "gpio": 13, "pullup": true, "debounce_ms": 30, "count_edges": true },
+      { "gpio": 16, "pullup": false, "debounce_ms": 30, "count_edges": true }
+    ],
+    "setup_button": { "gpio": 0, "active_low": true }
+  },
+  "analog": {
+    "mode": "in",
+    "in": { "ref_v": 1.0, "gain": 1.0 },
+    "out": {
+      "driver": "pwm_rc",
+      "pwm_rc": { "gpio": 2, "min": 0, "max": 1023 },
+      "mcp4725": { "address": 96, "sda": 4, "scl": 5 }
+    }
+  },
+  "security": {
+    "setup_token": "change-me-setup-token"
+  }
+}
