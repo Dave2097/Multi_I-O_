@@ -4,6 +4,13 @@
 
 #include "storage.h"
 
+static String json_string(JsonVariantConst v, const char *fallback = "") {
+  if (v.is<const char *>()) {
+    return String(v.as<const char *>());
+  }
+  return String(fallback);
+}
+
 bool WebServerManager::begin(IOManager *io, AnalogManager *analog, NetManager *net, const JsonDocument *sealedCfg) {
   ioMgr = io;
   analogMgr = analog;
@@ -165,8 +172,8 @@ void WebServerManager::setup_routes() {
       return;
     }
 
-    String token = String((const char *)(req["token"] | ""));
-    String expected = String((const char *)(*sealedConfig)["security"]["setup_token"] | "");
+    String token = json_string(req["token"]);
+    String expected = json_string((*sealedConfig)["security"]["setup_token"]);
     if (token.length() == 0 || token != expected) {
       server.send(403, "application/json", "{\"error\":\"invalid token\"}");
       return;
@@ -247,7 +254,7 @@ DynamicJsonDocument WebServerManager::build_state_doc() {
   sys["ip"] = staIp;
   sys["rssi"] = netMgr->rssi();
   sys["uptime_ms"] = millis();
-  sys["fw_profile"] = String((const char *)(*sealedConfig)["device"]["fw_profile"] | "default");
+  sys["fw_profile"] = json_string((*sealedConfig)["device"]["fw_profile"], "default");
   sys["setup_mode"] = netMgr->in_setup_mode();
 
   return doc;

@@ -18,18 +18,25 @@ static WebServerManager webMgr;
 static uint32_t setupPressStart = 0;
 static bool setupTriggered = false;
 
+static String json_string(JsonVariantConst v, const char *fallback = "") {
+  if (v.is<const char *>()) {
+    return String(v.as<const char *>());
+  }
+  return String(fallback);
+}
+
 static bool validate_config(const DynamicJsonDocument &cfg) {
   if (!cfg.containsKey("io") || !cfg.containsKey("analog") || !cfg.containsKey("security")) {
     return false;
   }
-  JsonObject io = cfg["io"];
-  if (io["relays"].as<JsonArray>().size() != 2) {
+  JsonObjectConst io = cfg["io"].as<JsonObjectConst>();
+  if (io["relays"].as<JsonArrayConst>().size() != 2) {
     return false;
   }
-  if (io["inputs"].as<JsonArray>().size() != 4) {
+  if (io["inputs"].as<JsonArrayConst>().size() != 4) {
     return false;
   }
-  String mode = String((const char *)cfg["analog"]["mode"] | "");
+  String mode = json_string(cfg["analog"]["mode"]);
   mode.toLowerCase();
   return mode == "in" || mode == "out";
 }

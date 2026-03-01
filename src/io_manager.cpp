@@ -1,19 +1,19 @@
 #include "io_manager.h"
 
 bool IOManager::begin(const JsonDocument &cfg) {
-  JsonObject io = cfg["io"];
+  JsonObjectConst io = cfg["io"].as<JsonObjectConst>();
   if (io.isNull()) {
     return false;
   }
 
   defaultDebounce = io["debounce_ms"] | 30;
 
-  JsonArray relayArr = io["relays"].as<JsonArray>();
+  JsonArrayConst relayArr = io["relays"].as<JsonArrayConst>();
   if (relayArr.isNull() || relayArr.size() != 2) {
     return false;
   }
   for (uint8_t i = 0; i < 2; i++) {
-    JsonObject r = relayArr[i];
+    JsonObjectConst r = relayArr[i];
     relays[i].gpio = r["gpio"] | 255;
     relays[i].active_low = r["active_low"] | false;
     relays[i].state = r["default"] | false;
@@ -21,12 +21,12 @@ bool IOManager::begin(const JsonDocument &cfg) {
     digitalWrite(relays[i].gpio, relays[i].active_low ? !relays[i].state : relays[i].state);
   }
 
-  JsonArray inputArr = io["inputs"].as<JsonArray>();
+  JsonArrayConst inputArr = io["inputs"].as<JsonArrayConst>();
   if (inputArr.isNull() || inputArr.size() != 4) {
     return false;
   }
   for (uint8_t i = 0; i < 4; i++) {
-    JsonObject in = inputArr[i];
+    JsonObjectConst in = inputArr[i];
     inputs[i].gpio = in["gpio"] | 255;
     inputs[i].pullup = in["pullup"] | false;
     inputs[i].count_edges = in["count_edges"] | true;
@@ -37,7 +37,7 @@ bool IOManager::begin(const JsonDocument &cfg) {
     inputs[i].last_change_ms = millis();
   }
 
-  JsonObject setupBtn = io["setup_button"];
+  JsonObjectConst setupBtn = io["setup_button"].as<JsonObjectConst>();
   setupBtnGpio = setupBtn["gpio"] | 255;
   setupBtnActiveLow = setupBtn["active_low"] | true;
   if (setupBtnGpio != 255) {

@@ -1,27 +1,34 @@
 #include "analog_manager.h"
 
+static String json_string(JsonVariantConst v, const char *fallback = "") {
+  if (v.is<const char *>()) {
+    return String(v.as<const char *>());
+  }
+  return String(fallback);
+}
+
 bool AnalogManager::begin(const JsonDocument &cfg) {
-  JsonObject analog = cfg["analog"];
+  JsonObjectConst analog = cfg["analog"].as<JsonObjectConst>();
   if (analog.isNull()) {
     statusText = "error";
     return false;
   }
 
-  String modeStr = analog["mode"] | "in";
+  String modeStr = json_string(analog["mode"], "in");
   modeStr.toLowerCase();
   analogMode = (modeStr == "out") ? AnalogMode::OUT : AnalogMode::IN;
 
-  JsonObject in = analog["in"];
+  JsonObjectConst in = analog["in"].as<JsonObjectConst>();
   inRefV = in["ref_v"] | 1.0f;
   inGain = in["gain"] | 1.0f;
 
   if (analogMode == AnalogMode::OUT) {
-    JsonObject out = analog["out"];
-    outDriver = String((const char *)(out["driver"] | "pwm_rc"));
+    JsonObjectConst out = analog["out"].as<JsonObjectConst>();
+    outDriver = json_string(out["driver"], "pwm_rc");
     outDriver.toLowerCase();
 
     if (outDriver == "pwm_rc") {
-      JsonObject pwm = out["pwm_rc"];
+      JsonObjectConst pwm = out["pwm_rc"].as<JsonObjectConst>();
       pwmGpio = pwm["gpio"] | 2;
       pwmMin = pwm["min"] | 0;
       pwmMax = pwm["max"] | 1023;
@@ -30,7 +37,7 @@ bool AnalogManager::begin(const JsonDocument &cfg) {
       analogWriteFreq(1000);
       statusText = "ok";
     } else if (outDriver == "mcp4725") {
-      JsonObject m = out["mcp4725"];
+      JsonObjectConst m = out["mcp4725"].as<JsonObjectConst>();
       mcpAddress = m["address"] | 0x60;
       i2cSda = m["sda"] | 4;
       i2cScl = m["scl"] | 5;
