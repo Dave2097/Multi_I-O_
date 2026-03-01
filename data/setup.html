@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MF-IO Setup</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <h1>MF-IO Netzwerk-Setup</h1>
+  <button id="scanBtn">WLAN scannen</button>
+  <ul id="scanList"></ul>
+
+  <h2>Netzwerkdaten</h2>
+  <label>SSID <input id="ssid" /></label>
+  <label>Passwort <input id="password" type="password" /></label>
+  <label><input type="checkbox" id="dhcp" checked /> DHCP</label>
+
+  <div id="staticFields" class="hidden">
+    <label>IP <input id="ip" value="192.168.1.200" /></label>
+    <label>Gateway <input id="gw" value="192.168.1.1" /></label>
+    <label>Netmask <input id="mask" value="255.255.255.0" /></label>
+    <label>DNS <input id="dns" value="8.8.8.8" /></label>
+  </div>
+
+  <button id="saveBtn">Save & Reboot</button>
+  <pre id="log"></pre>
+
+  <script src="/app.js"></script>
+</body>
+</html>
