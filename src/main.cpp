@@ -29,7 +29,7 @@ static bool validate_config(const DynamicJsonDocument &cfg) {
   if (io["inputs"].as<JsonArray>().size() != 4) {
     return false;
   }
-  String mode = cfg["analog"]["mode"] | "";
+  String mode = String((const char *)cfg["analog"]["mode"] | "");
   mode.toLowerCase();
   return mode == "in" || mode == "out";
 }

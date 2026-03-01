@@ -88,14 +88,14 @@ bool NetManager::load_from_json(const JsonDocument *netCfg) {
   if (netCfg == nullptr) {
     return false;
   }
-  cfg.ssid = (*netCfg)["ssid"] | "";
-  cfg.password = (*netCfg)["password"] | "";
+  cfg.ssid = String((const char *)(*netCfg)["ssid"] | "");
+  cfg.password = String((const char *)(*netCfg)["password"] | "");
   cfg.dhcp = (*netCfg)["dhcp"] | true;
   if (!cfg.dhcp) {
-    cfg.ip.fromString((*netCfg)["ip"] | "0.0.0.0");
-    cfg.gw.fromString((*netCfg)["gw"] | "0.0.0.0");
-    cfg.mask.fromString((*netCfg)["mask"] | "255.255.255.0");
-    cfg.dns.fromString((*netCfg)["dns"] | "0.0.0.0");
+    cfg.ip.fromString(String((const char *)(*netCfg)["ip"] | "0.0.0.0"));
+    cfg.gw.fromString(String((const char *)(*netCfg)["gw"] | "0.0.0.0"));
+    cfg.mask.fromString(String((const char *)(*netCfg)["mask"] | "255.255.255.0"));
+    cfg.dns.fromString(String((const char *)(*netCfg)["dns"] | "0.0.0.0"));
   }
   return cfg.ssid.length() > 0;
 }

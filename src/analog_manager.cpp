@@ -17,7 +17,7 @@ bool AnalogManager::begin(const JsonDocument &cfg) {
 
   if (analogMode == AnalogMode::OUT) {
     JsonObject out = analog["out"];
-    outDriver = out["driver"] | "pwm_rc";
+    outDriver = String((const char *)(out["driver"] | "pwm_rc"));
     outDriver.toLowerCase();
 
     if (outDriver == "pwm_rc") {

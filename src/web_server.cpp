@@ -165,8 +165,8 @@ void WebServerManager::setup_routes() {
       return;
     }
 
-    String token = req["token"] | "";
-    String expected = (*sealedConfig)["security"]["setup_token"] | "";
+    String token = String((const char *)(req["token"] | ""));
+    String expected = String((const char *)(*sealedConfig)["security"]["setup_token"] | "");
     if (token.length() == 0 || token != expected) {
       server.send(403, "application/json", "{\"error\":\"invalid token\"}");
       return;
@@ -247,7 +247,7 @@ DynamicJsonDocument WebServerManager::build_state_doc() {
   sys["ip"] = staIp;
   sys["rssi"] = netMgr->rssi();
   sys["uptime_ms"] = millis();
-  sys["fw_profile"] = (*sealedConfig)["device"]["fw_profile"] | "default";
+  sys["fw_profile"] = String((const char *)(*sealedConfig)["device"]["fw_profile"] | "default");
   sys["setup_mode"] = netMgr->in_setup_mode();
 
   return doc;
