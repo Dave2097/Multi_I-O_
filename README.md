@@ -37,6 +37,8 @@ pio device monitor
 4. `Save & Reboot`.
 5. Gerät startet STA und Dashboard unter `/`.
 
+Wenn die STA-Verbindung trotz gespeicherter Daten nicht innerhalb von ca. 30s aufgebaut werden kann, wechselt die Firmware automatisch in den Setup-AP-Modus als Fallback.
+
 ## Setup-Mode später aktivieren
 
 - Hardware: Setup-Taste (`io.setup_button.gpio`) mindestens 5s drücken.

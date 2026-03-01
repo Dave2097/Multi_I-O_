@@ -38,6 +38,8 @@ class NetManager {
   bool setupMode = false;
   bool hasCreds = false;
   bool apStarted = false;
+  uint32_t staConnectStartMs = 0;
+  uint32_t lastStaRetryMs = 0;
 
   bool load_from_json(const JsonDocument *netCfg);
   void start_ap();
