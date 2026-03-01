@@ -2,13 +2,6 @@
 
 #include "storage.h"
 
-static String json_string(JsonVariantConst v, const char *fallback = "") {
-  if (v.is<const char *>()) {
-    return String(v.as<const char *>());
-  }
-  return String(fallback);
-}
-
 bool NetManager::begin(const JsonDocument &sealedCfg, const JsonDocument *netCfg) {
   (void)sealedCfg;
   WiFi.mode(WIFI_OFF);
@@ -95,14 +88,14 @@ bool NetManager::load_from_json(const JsonDocument *netCfg) {
   if (netCfg == nullptr) {
     return false;
   }
-  cfg.ssid = json_string((*netCfg)["ssid"]);
-  cfg.password = json_string((*netCfg)["password"]);
+  cfg.ssid = String((const char *)(*netCfg)["ssid"] | "");
+  cfg.password = String((const char *)(*netCfg)["password"] | "");
   cfg.dhcp = (*netCfg)["dhcp"] | true;
   if (!cfg.dhcp) {
-    cfg.ip.fromString(json_string((*netCfg)["ip"], "0.0.0.0"));
-    cfg.gw.fromString(json_string((*netCfg)["gw"], "0.0.0.0"));
-    cfg.mask.fromString(json_string((*netCfg)["mask"], "255.255.255.0"));
-    cfg.dns.fromString(json_string((*netCfg)["dns"], "0.0.0.0"));
+    cfg.ip.fromString(String((const char *)(*netCfg)["ip"] | "0.0.0.0"));
+    cfg.gw.fromString(String((const char *)(*netCfg)["gw"] | "0.0.0.0"));
+    cfg.mask.fromString(String((const char *)(*netCfg)["mask"] | "255.255.255.0"));
+    cfg.dns.fromString(String((const char *)(*netCfg)["dns"] | "0.0.0.0"));
   }
   return cfg.ssid.length() > 0;
 }

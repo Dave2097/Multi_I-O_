@@ -1,12 +1,5 @@
 #include "analog_manager.h"
 
-static String json_string(JsonVariantConst v, const char *fallback = "") {
-  if (v.is<const char *>()) {
-    return String(v.as<const char *>());
-  }
-  return String(fallback);
-}
-
 bool AnalogManager::begin(const JsonDocument &cfg) {
   JsonObject analog = cfg["analog"];
   if (analog.isNull()) {
@@ -14,7 +7,7 @@ bool AnalogManager::begin(const JsonDocument &cfg) {
     return false;
   }
 
-  String modeStr = json_string(analog["mode"], "in");
+  String modeStr = analog["mode"] | "in";
   modeStr.toLowerCase();
   analogMode = (modeStr == "out") ? AnalogMode::OUT : AnalogMode::IN;
 
@@ -24,7 +17,7 @@ bool AnalogManager::begin(const JsonDocument &cfg) {
 
   if (analogMode == AnalogMode::OUT) {
     JsonObject out = analog["out"];
-    outDriver = json_string(out["driver"], "pwm_rc");
+    outDriver = String((const char *)(out["driver"] | "pwm_rc"));
     outDriver.toLowerCase();
 
     if (outDriver == "pwm_rc") {
