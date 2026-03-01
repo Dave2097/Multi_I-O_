@@ -1,0 +1,8 @@
+body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
+section { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+label { display: block; margin: 8px 0; }
+button { margin-top: 10px; padding: 8px 12px; }
+.hidden { display: none; }
+pre { background: #f7f7f7; padding: 10px; border-radius: 6px; }
+ul { padding-left: 18px; }
+li { cursor: pointer; margin: 4px 0; }
