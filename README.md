@@ -26,6 +26,8 @@ pio run -t uploadfs
 pio device monitor
 ```
 
+Hinweis: `monitor_speed` ist auf `74880` gesetzt, damit Boot- und Firmware-Logs im gleichen Takt lesbar sind.
+
 ## Setup-Ablauf
 
 1. Kein `/net.json` mit gültiger SSID vorhanden (oder Setup-Mode aktiv) → Gerät startet AP:

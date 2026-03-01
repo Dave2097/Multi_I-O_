@@ -44,7 +44,7 @@ static bool validate_config(const DynamicJsonDocument &cfg) {
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(74880);
   delay(100);
   Serial.println("\nMF-IO boot");
 
@@ -53,8 +53,13 @@ void setup() {
     return;
   }
 
-  if (!read_json("/config.json", gConfig) || !validate_config(gConfig)) {
-    Serial.println("Invalid /config.json");
+  if (!read_json("/config.json", gConfig)) {
+    Serial.println("Failed reading /config.json (missing or parse error)");
+    Serial.println("Hint: run pio run -t uploadfs to flash LittleFS assets");
+    return;
+  }
+  if (!validate_config(gConfig)) {
+    Serial.println("Invalid /config.json (required fields missing)");
     return;
   }
 
