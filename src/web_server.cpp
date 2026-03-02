@@ -46,9 +46,12 @@ void WebServerManager::notify_state() {
 
 void WebServerManager::setup_routes() {
   server.on("/", HTTP_GET, [this]() {
-    File f = LittleFS.open("/index.html", "r");
+    const char *page = setup_mode_allowed() ? "/setup.html" : "/index.html";
+    File f = LittleFS.open(page, "r");
     if (!f) {
-      server.send(404, "text/plain", "index.html missing");
+      server.send(404,
+                  "text/plain",
+                  String(page + 1) + " missing (run: pio run -t uploadfs)");
       return;
     }
     server.streamFile(f, "text/html");
@@ -187,12 +190,18 @@ void WebServerManager::setup_routes() {
   });
 
   server.onNotFound([this]() {
+    if (setup_mode_allowed()) {
+      server.sendHeader("Location", "/setup", true);
+      server.send(302, "text/plain", "Redirecting to /setup");
+      return;
+    }
+
     String path = server.uri();
     if (path.endsWith("/")) {
       path += "index.html";
     }
     if (!LittleFS.exists(path)) {
-      server.send(404, "text/plain", "Not found");
+      server.send(404, "text/plain", "Not found (run: pio run -t uploadfs)");
       return;
     }
     File f = LittleFS.open(path, "r");
