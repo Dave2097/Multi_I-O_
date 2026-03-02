@@ -6,32 +6,47 @@
   <title>MF-IO Dashboard</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body>
-  <h1>MF-IO Dashboard</h1>
-  <section>
-    <h2>Relais</h2>
-    <label>R1 <input type="checkbox" id="relay1"></label>
-    <label>R2 <input type="checkbox" id="relay2"></label>
-  </section>
+<body class="bg">
+  <main class="container">
+    <header class="topbar row-between">
+      <div>
+        <h1>MF-IO Dashboard</h1>
+        <p class="muted">Live Status von Relais, Eingängen und Analogkanal</p>
+      </div>
+      <a class="btn btn-ghost" href="/setup">Setup</a>
+    </header>
 
-  <section>
-    <h2>Digitale Eingänge</h2>
-    <div id="inputs"></div>
-  </section>
+    <section class="card">
+      <h2>Relais</h2>
+      <div class="switches">
+        <label class="switch-card">Relais 1
+          <input type="checkbox" id="relay1">
+        </label>
+        <label class="switch-card">Relais 2
+          <input type="checkbox" id="relay2">
+        </label>
+      </div>
+    </section>
 
-  <section>
-    <h2>Analog</h2>
-    <div id="analogInfo"></div>
-    <div id="analogOutWrap" class="hidden">
-      <input type="range" min="0" max="4095" value="0" id="analogOut">
-      <span id="analogOutVal">0</span>
-    </div>
-  </section>
+    <section class="card">
+      <h2>Digitale Eingänge</h2>
+      <div id="inputs" class="input-grid"></div>
+    </section>
 
-  <section>
-    <h2>System</h2>
-    <pre id="system"></pre>
-  </section>
+    <section class="card">
+      <h2>Analog</h2>
+      <p id="analogInfo"></p>
+      <div id="analogOutWrap" class="hidden">
+        <input type="range" min="0" max="4095" value="0" id="analogOut">
+        <strong id="analogOutVal">0</strong>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>System</h2>
+      <pre id="system"></pre>
+    </section>
+  </main>
 
   <script src="/app.js"></script>
 </body>

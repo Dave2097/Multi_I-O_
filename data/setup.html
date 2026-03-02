@@ -6,26 +6,57 @@
   <title>MF-IO Setup</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body>
-  <h1>MF-IO Netzwerk-Setup</h1>
-  <button id="scanBtn">WLAN scannen</button>
-  <ul id="scanList"></ul>
+<body class="bg">
+  <main class="container">
+    <header class="topbar">
+      <h1>MF-IO Setup</h1>
+      <p class="muted">Netzwerk konfigurieren und Gerät neu starten</p>
+    </header>
 
-  <h2>Netzwerkdaten</h2>
-  <label>SSID <input id="ssid" /></label>
-  <label>Passwort <input id="password" type="password" /></label>
-  <label><input type="checkbox" id="dhcp" checked /> DHCP</label>
+    <section class="card">
+      <div class="card-head">
+        <h2>WLAN Scan</h2>
+        <button id="scanBtn" class="btn">Scan starten</button>
+      </div>
+      <p class="muted">Tippe auf ein WLAN, um die SSID automatisch zu übernehmen.</p>
+      <ul id="scanList" class="wifi-list"></ul>
+    </section>
 
-  <div id="staticFields" class="hidden">
-    <label>IP <input id="ip" value="192.168.1.200" /></label>
-    <label>Gateway <input id="gw" value="192.168.1.1" /></label>
-    <label>Netmask <input id="mask" value="255.255.255.0" /></label>
-    <label>DNS <input id="dns" value="8.8.8.8" /></label>
-  </div>
+    <section class="card">
+      <h2>Netzwerkdaten</h2>
+      <div class="grid-2">
+        <label>SSID
+          <input id="ssid" placeholder="Mein WLAN" autocomplete="off" />
+        </label>
+        <label>Passwort
+          <input id="password" type="password" placeholder="••••••••" />
+        </label>
+      </div>
 
-  <button id="saveBtn">Save & Reboot</button>
-  <pre id="log"></pre>
+      <label class="checkbox-row"><input type="checkbox" id="dhcp" checked /> DHCP automatisch</label>
 
+      <div id="staticFields" class="grid-2 hidden">
+        <label>IP
+          <input id="ip" value="192.168.1.200" />
+        </label>
+        <label>Gateway
+          <input id="gw" value="192.168.1.1" />
+        </label>
+        <label>Netmask
+          <input id="mask" value="255.255.255.0" />
+        </label>
+        <label>DNS
+          <input id="dns" value="8.8.8.8" />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="saveBtn" class="btn btn-primary">Save &amp; Reboot</button>
+        <a class="btn btn-ghost" href="/dashboard">Dashboard öffnen</a>
+      </div>
+      <p id="log" class="status"></p>
+    </section>
+  </main>
   <script src="/app.js"></script>
 </body>
 </html>
