@@ -22,6 +22,13 @@ function setStatus(msg, isError) {
   log.textContent = msg;
 }
 
+function setStatus(msg, isError = false) {
+  const log = document.getElementById('log');
+  if (!log) return;
+  log.style.color = isError ? '#ff8f8f' : '#27c07d';
+  log.textContent = msg;
+}
+
 function renderState(state) {
   var r1 = document.getElementById('relay1');
   var r2 = document.getElementById('relay2');
@@ -226,6 +233,9 @@ function initSetup() {
   loadCurrentNetworkConfig().then(function () {
     setStatus('Bereit. Bitte WLAN auswählen und speichern.', false);
   });
+
+  await loadCurrentNetworkConfig();
+  setStatus('Bereit. Bitte WLAN auswählen und speichern.');
 }
 
 if (isSetupPage) {
