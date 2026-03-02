@@ -223,6 +223,12 @@ void WebServerManager::setup_routes() {
   });
 
   server.onNotFound([this]() {
+    if (setup_mode_allowed()) {
+      server.sendHeader("Location", "/setup", true);
+      server.send(302, "text/plain", "Redirecting to /setup");
+      return;
+    }
+
     String path = server.uri();
     if (path.endsWith("/")) {
       path += "index.html";
