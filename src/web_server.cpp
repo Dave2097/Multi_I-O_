@@ -57,6 +57,36 @@ void WebServerManager::setup_routes() {
     server.streamFile(f, "text/html");
     f.close();
   });
+  server.on("/dashboard", HTTP_GET, [this]() {
+    File f = LittleFS.open("/index.html", "r");
+    if (!f) {
+      server.send(404, "text/plain", "index.html missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.streamFile(f, "text/html");
+    f.close();
+  });
+
+  server.on("/generate_204", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/hotspot-detect.html", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/ncsi.txt", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/fwlink", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
 
   server.on("/setup", HTTP_GET, [this]() {
     if (!setup_mode_allowed()) {
