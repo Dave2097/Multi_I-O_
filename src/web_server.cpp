@@ -46,12 +46,69 @@ void WebServerManager::notify_state() {
 
 void WebServerManager::setup_routes() {
   server.on("/", HTTP_GET, [this]() {
-    File f = LittleFS.open("/index.html", "r");
+    const char *page = setup_mode_allowed() ? "/setup.html" : "/index.html";
+    File f = LittleFS.open(page, "r");
     if (!f) {
-      server.send(404, "text/plain", "index.html missing");
+      server.send(404,
+                  "text/plain",
+                  String(page + 1) + " missing (run: pio run -t uploadfs)");
       return;
     }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
     server.streamFile(f, "text/html");
+    f.close();
+  });
+  server.on("/dashboard", HTTP_GET, [this]() {
+    File f = LittleFS.open("/index.html", "r");
+    if (!f) {
+      server.send(404, "text/plain", "index.html missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
+    server.streamFile(f, "text/html");
+    f.close();
+  });
+
+  server.on("/generate_204", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/hotspot-detect.html", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/ncsi.txt", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+  server.on("/fwlink", HTTP_ANY, [this]() {
+    server.sendHeader("Location", "/", true);
+    server.send(302, "text/plain", "");
+  });
+
+
+  server.on("/styles.css", HTTP_GET, [this]() {
+    File f = LittleFS.open("/styles.css", "r");
+    if (!f) {
+      server.send(404, "text/plain", "styles.css missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
+    server.streamFile(f, "text/css");
+    f.close();
+  });
+
+  server.on("/app.js", HTTP_GET, [this]() {
+    File f = LittleFS.open("/app.js", "r");
+    if (!f) {
+      server.send(404, "text/plain", "app.js missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
+    server.streamFile(f, "application/javascript");
     f.close();
   });
 
@@ -65,6 +122,7 @@ void WebServerManager::setup_routes() {
       server.send(404, "text/plain", "setup.html missing");
       return;
     }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
     server.streamFile(f, "text/html");
     f.close();
   });
@@ -191,13 +249,22 @@ void WebServerManager::setup_routes() {
     if (path.endsWith("/")) {
       path += "index.html";
     }
-    if (!LittleFS.exists(path)) {
-      server.send(404, "text/plain", "Not found");
+
+    if (LittleFS.exists(path)) {
+      File f = LittleFS.open(path, "r");
+      server.sendHeader("Cache-Control", "no-store, max-age=0");
+      server.streamFile(f, content_type(path));
+      f.close();
       return;
     }
-    File f = LittleFS.open(path, "r");
-    server.streamFile(f, content_type(path));
-    f.close();
+
+    if (setup_mode_allowed()) {
+      server.sendHeader("Location", "/setup", true);
+      server.send(302, "text/plain", "Redirecting to /setup");
+      return;
+    }
+
+    server.send(404, "text/plain", "Not found (run: pio run -t uploadfs)");
   });
 }
 
