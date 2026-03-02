@@ -90,6 +90,28 @@ void WebServerManager::setup_routes() {
   });
 
 
+  server.on("/styles.css", HTTP_GET, [this]() {
+    File f = LittleFS.open("/styles.css", "r");
+    if (!f) {
+      server.send(404, "text/plain", "styles.css missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
+    server.streamFile(f, "text/css");
+    f.close();
+  });
+
+  server.on("/app.js", HTTP_GET, [this]() {
+    File f = LittleFS.open("/app.js", "r");
+    if (!f) {
+      server.send(404, "text/plain", "app.js missing (run: pio run -t uploadfs)");
+      return;
+    }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
+    server.streamFile(f, "application/javascript");
+    f.close();
+  });
+
   server.on("/setup", HTTP_GET, [this]() {
     if (!setup_mode_allowed()) {
       server.send(403, "application/json", "{\"error\":\"setup mode required\"}");
