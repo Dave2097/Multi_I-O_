@@ -76,6 +76,11 @@ static bool load_or_create_default_config(DynamicJsonDocument &cfg) {
     return true;
   }
 
+  if (storage_exists("/config.json")) {
+    Serial.println("/config.json exists but is invalid JSON - keeping file for manual fix");
+    return false;
+  }
+
   Serial.println("/config.json missing - writing default config");
   DynamicJsonDocument defaults(4096);
   DeserializationError err = deserializeJson(defaults, kDefaultConfigJson);
@@ -104,7 +109,7 @@ void setup() {
 
   if (!load_or_create_default_config(gConfig)) {
     Serial.println("Failed reading /config.json");
-    Serial.println("Hint: run pio run -t uploadfs to flash LittleFS assets if needed");
+    Serial.println("Hint: if file is missing run pio run -t uploadfs; if parse error, fix JSON manually");
     return;
   }
   if (!validate_config(gConfig)) {
