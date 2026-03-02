@@ -54,6 +54,7 @@ void WebServerManager::setup_routes() {
                   String(page + 1) + " missing (run: pio run -t uploadfs)");
       return;
     }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
     server.streamFile(f, "text/html");
     f.close();
   });
@@ -63,6 +64,7 @@ void WebServerManager::setup_routes() {
       server.send(404, "text/plain", "index.html missing (run: pio run -t uploadfs)");
       return;
     }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
     server.streamFile(f, "text/html");
     f.close();
   });
@@ -98,6 +100,7 @@ void WebServerManager::setup_routes() {
       server.send(404, "text/plain", "setup.html missing");
       return;
     }
+    server.sendHeader("Cache-Control", "no-store, max-age=0");
     server.streamFile(f, "text/html");
     f.close();
   });
@@ -230,13 +233,22 @@ void WebServerManager::setup_routes() {
     if (path.endsWith("/")) {
       path += "index.html";
     }
-    if (!LittleFS.exists(path)) {
-      server.send(404, "text/plain", "Not found (run: pio run -t uploadfs)");
+
+    if (LittleFS.exists(path)) {
+      File f = LittleFS.open(path, "r");
+      server.sendHeader("Cache-Control", "no-store, max-age=0");
+      server.streamFile(f, content_type(path));
+      f.close();
       return;
     }
-    File f = LittleFS.open(path, "r");
-    server.streamFile(f, content_type(path));
-    f.close();
+
+    if (setup_mode_allowed()) {
+      server.sendHeader("Location", "/setup", true);
+      server.send(302, "text/plain", "Redirecting to /setup");
+      return;
+    }
+
+    server.send(404, "text/plain", "Not found (run: pio run -t uploadfs)");
   });
 }
 

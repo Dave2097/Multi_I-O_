@@ -1,4 +1,4 @@
-const isSetupPage = location.pathname.startsWith('/setup');
+const isSetupPage = document.getElementById('scanBtn') !== null;
 let ws = null;
 let wsOnline = false;
 
