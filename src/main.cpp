@@ -20,6 +20,34 @@ static bool setupTriggered = false;
 static bool bootOk = false;
 static bool bootErrorPrinted = false;
 
+static const char *kDefaultConfigJson = R"JSON({
+  "device": {"name": "MF-IO", "fw_profile": "default"},
+  "io": {
+    "debounce_ms": 30,
+    "relays": [
+      {"gpio": 5, "active_low": true, "default": 0},
+      {"gpio": 4, "active_low": true, "default": 0}
+    ],
+    "inputs": [
+      {"gpio": 14, "pullup": true, "debounce_ms": 30, "count_edges": true},
+      {"gpio": 12, "pullup": true, "debounce_ms": 30, "count_edges": true},
+      {"gpio": 13, "pullup": true, "debounce_ms": 30, "count_edges": true},
+      {"gpio": 16, "pullup": false, "debounce_ms": 30, "count_edges": true}
+    ],
+    "setup_button": {"gpio": 0, "active_low": true}
+  },
+  "analog": {
+    "mode": "in",
+    "in": {"ref_v": 1.0, "gain": 1.0},
+    "out": {
+      "driver": "pwm_rc",
+      "pwm_rc": {"gpio": 2, "min": 0, "max": 1023},
+      "mcp4725": {"address": 96, "sda": 4, "scl": 5}
+    }
+  },
+  "security": {"setup_token": "change-me-setup-token"}
+})JSON";
+
 static String json_string(JsonVariantConst v, const char *fallback = "") {
   if (v.is<const char *>()) {
     return String(v.as<const char *>());
@@ -43,6 +71,32 @@ static bool validate_config(const DynamicJsonDocument &cfg) {
   return mode == "in" || mode == "out";
 }
 
+static bool load_or_create_default_config(DynamicJsonDocument &cfg) {
+  if (read_json("/config.json", cfg)) {
+    return true;
+  }
+
+  if (storage_exists("/config.json")) {
+    Serial.println("/config.json exists but is invalid JSON - keeping file for manual fix");
+    return false;
+  }
+
+  Serial.println("/config.json missing - writing default config");
+  DynamicJsonDocument defaults(4096);
+  DeserializationError err = deserializeJson(defaults, kDefaultConfigJson);
+  if (err) {
+    Serial.printf("Default config parse failed: %s\n", err.c_str());
+    return false;
+  }
+  if (!write_json("/config.json", defaults)) {
+    Serial.println("Failed to write default /config.json");
+    return false;
+  }
+  Serial.println("Default /config.json created");
+
+  return read_json("/config.json", cfg);
+}
+
 void setup() {
   Serial.begin(74880);
   delay(100);
@@ -53,9 +107,9 @@ void setup() {
     return;
   }
 
-  if (!read_json("/config.json", gConfig)) {
-    Serial.println("Failed reading /config.json (missing or parse error)");
-    Serial.println("Hint: run pio run -t uploadfs to flash LittleFS assets");
+  if (!load_or_create_default_config(gConfig)) {
+    Serial.println("Failed reading /config.json");
+    Serial.println("Hint: if file is missing run pio run -t uploadfs; if parse error, fix JSON manually");
     return;
   }
   if (!validate_config(gConfig)) {
