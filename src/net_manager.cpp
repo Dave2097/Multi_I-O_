@@ -2,6 +2,8 @@
 
 #include "storage.h"
 
+static constexpr const char *kSetupApPassword = "setup1234";
+
 static String json_string(JsonVariantConst v, const char *fallback = "") {
   if (v.is<const char *>()) {
     return String(v.as<const char *>());
@@ -138,18 +140,19 @@ void NetManager::start_ap() {
 
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-  apStarted = WiFi.softAP(ssid.c_str(), "setup1234");
+  apStarted = WiFi.softAP(ssid.c_str(), kSetupApPassword);
 
   // Fallback to AP-only mode when AP+STA is unstable.
   if (!apStarted) {
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-    apStarted = WiFi.softAP(ssid.c_str(), "setup1234");
+    apStarted = WiFi.softAP(ssid.c_str(), kSetupApPassword);
   }
 
-  Serial.printf("[NET] AP start %s, SSID=%s, IP=%s\n",
+  Serial.printf("[NET] AP start %s, SSID=%s, PASS=%s, IP=%s\n",
                 apStarted ? "OK" : "FAILED",
                 ssid.c_str(),
+                kSetupApPassword,
                 WiFi.softAPIP().toString().c_str());
 
   WiFi.scanNetworks(true);
